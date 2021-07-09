@@ -71,7 +71,7 @@ section {
 }
 
 .navbar__menu li {
-    display: inline-block;
+    display: block;
 }
 
 .navbar__menu .menu__link {
@@ -80,6 +80,7 @@ section {
     font-weight: bold;
     text-decoration: none;
     color: #000;
+    border-radius: 10px;
 }
 
 .navbar__menu .menu__link:hover {
@@ -92,8 +93,8 @@ section {
 .page__header {
     background: #fff;
     position: fixed;
-    top: 0;
-    width: 100%;
+    right: 0;
+    border-radius: 10px;
     z-index: 5;
 }
 
