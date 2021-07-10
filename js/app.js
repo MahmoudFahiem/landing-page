@@ -26,12 +26,12 @@ const UInavbarList = document.querySelector('#navbar__list');
  * 
 */
 
-const createNavItem = (navListItemLink, navListItemText) => {
-    const navbarListItem = document.createElement('li');
-    navbarListItem.innerHTML = `
-        <a href="#${navListItemLink}" class="menu__link">${navListItemText}</a>
+const createNavItem = (navItemLink, navItemText) => {
+    const navbarItem = document.createElement('li');
+    navbarItem.innerHTML = `
+        <a href="#" data-section="${navItemLink}" class="menu__link">${navItemText}</a>
     `;
-    return navbarListItem;
+    return navbarItem;
 }
 
 
@@ -48,6 +48,7 @@ const buildNav = () => {
     const UImainSections = document.querySelectorAll("main section");
     UImainSections.forEach((UImainSection) => {
         const sectionId = UImainSection.id;
+        // TODO: Get section name for data nav
         const sectionName = UImainSection.querySelector('h2').textContent;
         const navItem = createNavItem(sectionId, sectionName);
         virtualDOM.appendChild(navItem);
