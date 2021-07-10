@@ -19,6 +19,8 @@
 */
 
 const UInavbarList = document.querySelector('#navbar__list');
+let sectionsOffsetTop = [];
+
 
 /**
  * End Global Variables
@@ -32,6 +34,20 @@ const createNavItem = (navItemLink, navItemText) => {
         <a href="#" data-section="${navItemLink}" class="menu__link">${navItemText}</a>
     `;
     return navbarItem;
+}
+
+const getSectionsOffsetTop = () => {
+    if (!sectionsOffsetTop.length) {
+        const UIsections = document.querySelectorAll('main section');
+        ;
+        UIsections.forEach(UIsection => {
+            sectionsOffsetTop.push({
+                element: UIsection,
+                offsetTop: UIsection.offsetTop
+            });
+        });
+    }
+    return sectionsOffsetTop;
 }
 
 
@@ -70,6 +86,17 @@ const activateScrolledSection = (section) => {
 
 // Add class 'active' to section when near top of viewport
 
+const activateSectionOnScroll = () => {
+    const windowPosition = window.scrollY;
+    const sectionsOffsetTop = getSectionsOffsetTop();
+    sectionsOffsetTop.forEach( sectionObject => {
+        const sectionTopOffset = sectionObject.offsetTop;
+        const sectionHeight = sectionObject.element.offsetHeight;
+        if (!((sectionTopOffset - sectionHeight*0.5) <= windowPosition)) return;
+        deactivateAllSections();
+        activateScrolledSection(sectionObject.element);
+    })
+}
 
 // Scroll to anchor ID using scrollTO event
 
@@ -102,4 +129,5 @@ UInavbarList.addEventListener('click', (e) => {
 
 // Set sections as active
 
+window.addEventListener('scroll', activateSectionOnScroll);
 
