@@ -106,8 +106,6 @@ const scrollToRelatedSection = (clickedNavItem) => {
     relatedSection.scrollIntoView({
         behavior: 'smooth'
     });
-    deactivateAllSections();
-    activateScrolledSection(relatedSection);
 }
 
 /**
