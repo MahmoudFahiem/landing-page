@@ -56,11 +56,32 @@ const buildNav = () => {
     UInavbarList.appendChild(virtualDOM);
 }
 
+const deactivateAllSections = () => {
+    const UIsections = document.querySelectorAll('main section');
+    UIsections.forEach(UIsection => {
+        UIsection.classList.remove('active');
+    })
+}
+
+const activateScrolledSection = (section) => {
+    if (section.classList.contains('active')) return;
+    section.classList.add('active');
+}
+
 // Add class 'active' to section when near top of viewport
 
 
 // Scroll to anchor ID using scrollTO event
 
+const scrollToRelatedSection = (clickedNavItem) => {
+    const relatedSectionId = clickedNavItem.getAttribute('data-section');
+    const relatedSection = document.querySelector(`#${relatedSectionId}`);
+    relatedSection.scrollIntoView({
+        behavior: 'smooth'
+    });
+    deactivateAllSections();
+    activateScrolledSection(relatedSection);
+}
 
 /**
  * End Main Functions
@@ -73,6 +94,11 @@ const buildNav = () => {
 document.addEventListener('DOMContentLoaded', buildNav);
 
 // Scroll to section on link click
+
+UInavbarList.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (e.target.classList.contains('menu__link')) scrollToRelatedSection(e.target);
+})
 
 // Set sections as active
 
