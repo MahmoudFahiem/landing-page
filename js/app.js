@@ -64,8 +64,7 @@ const buildNav = () => {
     const UImainSections = document.querySelectorAll("main section");
     UImainSections.forEach((UImainSection) => {
         const sectionId = UImainSection.id;
-        // TODO: Get section name for data nav
-        const sectionName = UImainSection.querySelector('h2').textContent;
+        const sectionName = UImainSection.getAttribute('data-nav');
         const navItem = createNavItem(sectionId, sectionName);
         virtualDOM.appendChild(navItem);
     });
