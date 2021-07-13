@@ -19,8 +19,9 @@
 */
 
 const UInavbarList = document.querySelector('#navbar__list');
-let sectionsOffsetTop = [];
-
+const UImainSections = document.querySelectorAll('main section');
+let prevSection = null;
+let currentSection = {};
 
 /**
  * End Global Variables
@@ -36,20 +37,55 @@ const createNavItem = (navItemLink, navItemText) => {
     return navbarItem;
 }
 
-const getSectionsOffsetTop = () => {
-    if (!sectionsOffsetTop.length) {
-        const UIsections = document.querySelectorAll('main section');
-        ;
-        UIsections.forEach(UIsection => {
-            sectionsOffsetTop.push({
-                element: UIsection,
-                offsetTop: UIsection.offsetTop
-            });
+const generateSectionsArr = () => {
+    let sectionsArr = [];
+    const UIsections = document.querySelectorAll('main section');
+    UIsections.forEach( (UIsection, index) => {
+        sectionsArr.push({
+            id: index,
+            element: UIsection,
+            positionData: UIsection.getBoundingClientRect(),
         });
-    }
-    return sectionsOffsetTop;
+    });
+    return sectionsArr;
 }
 
+const getSiblings = (element) => {
+    // for collecting siblings
+    let siblings = [];
+    // if no parent, return no sibling
+    if (!element.parentElement) return siblings;
+    // first child of the parent node
+    let sibling = element.parentElement.firstElementChild;
+
+    // collecting siblings
+    while (sibling) {
+        if (sibling !== element) siblings.push(sibling);
+        sibling = sibling.nextElementSibling;
+    }
+    return siblings;
+};
+
+// scroll stop event helper function
+function scrollStop(callback, refresh = 66) {
+
+    // Make sure a valid callback was provided
+    if (!callback || typeof callback !== 'function') return;
+
+    // Setup scrolling variable
+    let isScrolling;
+
+    // Listen for scroll events
+    window.addEventListener('scroll', function (event) {
+
+        // Clear our timeout throughout the scroll
+        window.clearTimeout(isScrolling);
+
+        // Set a timeout to run after scrolling ends
+        isScrolling = setTimeout(callback, refresh);
+
+    }, false);
+}
 
 /**
  * End Helper Functions
@@ -57,11 +93,16 @@ const getSectionsOffsetTop = () => {
  * 
 */
 
+// initial function that runs on page loading
+const init = () => {
+    // Build Navbar dynamically based on sections
+    buildNav();
+}
+
 // build the nav
 
 const buildNav = () => {
     const virtualDOM = document.createDocumentFragment();
-    const UImainSections = document.querySelectorAll("main section");
     UImainSections.forEach((UImainSection) => {
         const sectionId = UImainSection.id;
         const sectionName = UImainSection.getAttribute('data-nav');
@@ -71,29 +112,42 @@ const buildNav = () => {
     UInavbarList.appendChild(virtualDOM);
 }
 
-const deactivateAllSections = () => {
-    const UIsections = document.querySelectorAll('main section');
-    UIsections.forEach(UIsection => {
-        UIsection.classList.remove('active');
-    })
+const deactivateSection = UIprevSection => {
+    UIprevSection.classList.remove('active');
 }
 
-const activateScrolledSection = (section) => {
+const activateSection = section => {
     if (section.classList.contains('active')) return;
     section.classList.add('active');
+}
+
+const activateNavLink = navLink => {
+    if (navLink.classList.contains('active')) return;
+    navLink.classList.add('active');
+}
+
+const deactivateNavLink = navLink => {
+    if (!navLink.classList.contains('active')) return;
+    navLink.classList.remove('active');
 }
 
 // Add class 'active' to section when near top of viewport
 
 const activateSectionOnScroll = () => {
-    const windowPosition = window.scrollY;
-    const sectionsOffsetTop = getSectionsOffsetTop();
-    sectionsOffsetTop.forEach( sectionObject => {
-        const sectionTopOffset = sectionObject.offsetTop;
-        const sectionHeight = sectionObject.element.offsetHeight;
-        if (!((sectionTopOffset - sectionHeight*0.5) <= windowPosition)) return;
-        deactivateAllSections();
-        activateScrolledSection(sectionObject.element);
+    UImainSections.forEach((section) => {
+        const sectionPostionData = section.getBoundingClientRect();
+        const sectionViewTopOffset = Math.round(sectionPostionData.top);
+        const sectionHeight = sectionPostionData.height;
+        const sectionId = section.id;
+        const relatedNavLink = document.querySelector(`[data-section=${sectionId}]`);
+        console.log(relatedNavLink);
+        if (sectionViewTopOffset >= -sectionHeight * 0.8 && sectionViewTopOffset <= sectionHeight * 0.2) {
+            activateSection(section);
+            activateNavLink(relatedNavLink);
+        } else {
+            deactivateSection(section);
+            deactivateNavLink(relatedNavLink);
+        }
     })
 }
 
@@ -115,7 +169,7 @@ const scrollToRelatedSection = (clickedNavItem) => {
 
 // Build menu 
 
-document.addEventListener('DOMContentLoaded', buildNav);
+document.addEventListener('DOMContentLoaded', init);
 
 // Scroll to section on link click
 
@@ -126,5 +180,5 @@ UInavbarList.addEventListener('click', (e) => {
 
 // Set sections as active
 
-window.addEventListener('scroll', activateSectionOnScroll);
+scrollStop(activateSectionOnScroll);
 

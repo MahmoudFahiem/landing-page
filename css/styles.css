@@ -80,10 +80,11 @@ section {
     font-weight: bold;
     text-decoration: none;
     color: #000;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
-.navbar__menu .menu__link:hover {
+.navbar__menu .menu__link:hover,
+.navbar__menu .menu__link.active {
     background: #333;
     color: #fff;
     transition: ease 0.3s all;
@@ -94,7 +95,7 @@ section {
     background: #fff;
     position: fixed;
     right: 0;
-    border-radius: 10px;
+    border-radius: 5px;
     z-index: 5;
 }
 
